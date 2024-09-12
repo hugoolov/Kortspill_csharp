@@ -6,6 +6,6 @@ class Program
     {
         
         BlackJack blackJackGame = new BlackJack();
-        blackJackGame.DealersCards();
+        blackJackGame.DealCards();
     }
 }

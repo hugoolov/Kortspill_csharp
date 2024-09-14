@@ -13,92 +13,111 @@ public class BlackJack : CardDeck
         Card DealersSecondCard = Draw();
         Card PlayersFirstCard = Draw();
         Card PlayersSecondCard = Draw();
+        
         dealersSum = (int)DealersFirstCard.CardValue + (int)DealersSecondCard.CardValue;
         playersSum = (int)PlayersFirstCard.CardValue + (int)PlayersSecondCard.CardValue;
-        Console.WriteLine($"{DealersFirstCard.CardValue} of {DealersFirstCard.CardType} and {DealersSecondCard.CardValue} of {DealersSecondCard.CardType}");
+        
+        Console.WriteLine($"Dealer: {DealersFirstCard.CardValue} of {DealersFirstCard.CardType} and the second one is hidden");
+        Console.WriteLine($"You: {PlayersFirstCard.CardValue} of {PlayersFirstCard.CardType} and {PlayersSecondCard.CardValue} of {PlayersSecondCard.CardType}");
+        Console.WriteLine($"Your sum is {playersSum} "); 
+        playerChoice();
+        Console.WriteLine($"Dealer revels second card: {DealersFirstCard.CardValue} of {DealersFirstCard.CardType} and {PlayersSecondCard.CardValue} of {PlayersSecondCard.CardType}");
         Console.WriteLine($"His sum is {dealersSum} ");
-        Console.WriteLine($"{PlayersFirstCard.CardValue} of {PlayersFirstCard.CardType} and {PlayersSecondCard.CardValue} of {PlayersSecondCard.CardType}");
-        Console.WriteLine($"Your sum is {playersSum} ");
-        Console.WriteLine("Do you want to hit or stay? (h/s)");
-        string hitOrStay = Console.ReadLine().ToLower();
-        if (hitOrStay == "h")
-        {
-            PlayerHit();
-            if (playersSum == 21)
-            {
-                Console.WriteLine("You won");
-                return;
-            }
-        }
 
-        if (playersSum > 21)
+        dealersTurn();
+        dealersTurn();
+        outcome();
+    }
+
+    private void dealersTurn()
+    {
+        if (dealersSum < 17  && playersSum < 22 || dealersSum < playersSum)
         {
-            Console.WriteLine("You lose");
+            DealerHit();
         }
         else
         {
-            Console.WriteLine("Do you want to hit or stay? (h/s)");
-            hitOrStay = Console.ReadLine();
-            if (hitOrStay == "h")
-            {
-                PlayerHit();
-                if (playersSum == 21)
-                {
-                    Console.WriteLine("You won");
-                    return;
-                }
-                if (playersSum > 21)
-                {
-                    Console.WriteLine("You lose");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"You stay on {playersSum}");
-            }
-
-            if (dealersSum < 17)
-            {
-                DealerHit();
-                outcome();
-            }
-            else
-            {
-                Console.WriteLine($"Dealers stays on {dealersSum}");
-                outcome();
-            }
+            outcome();
         }
+    }
+
+    public void playerChoice()
+    {
+        Console.WriteLine("Hit or stay (h/s)");
+        string hitOrStay = Console.ReadLine().ToLower();
         
+        if(hitOrStay == "h"){
+            PlayerHit();
+        }else if (hitOrStay == "s")
+        {
+            playerStays();
+        }
+    }
+
+    private void playerStays()
+    {
+        Console.WriteLine($"You chose to stay and your sum is {playersSum}");
     }
 
     public void PlayerHit()
     {
-        Card playersThirdCard = Draw();
-        playersSum = (int)playersThirdCard.CardValue + playersSum;
-        Console.WriteLine(playersThirdCard.CardValue + " of " + playersThirdCard.CardType);
+        Card playersExtraCard = Draw();
+        playersSum = (int)playersExtraCard.CardValue + playersSum;
+        if (playersSum > 21)
+        {
+            playerBust();
+        }
+        Console.WriteLine(playersExtraCard.CardValue + " of " + playersExtraCard.CardType);
         Console.WriteLine("Your sum now " + playersSum);
     }
+
+    private void playerBust()
+    {
+        Console.WriteLine("Bust, you have lost");
+        EndOfGame();
+    }
+
     public void DealerHit()
     {
-        Card DealersThirdCard = Draw();
-        dealersSum = (int)DealersThirdCard.CardValue + dealersSum;
-        Console.WriteLine(DealersThirdCard.CardValue + " of " + DealersThirdCard.CardType);
+        Card DealersExtraCard = Draw();
+        dealersSum = (int)DealersExtraCard.CardValue + dealersSum;
+        
+        Console.WriteLine("Dealer hits, he got " + DealersExtraCard.CardValue + " of " + DealersExtraCard.CardType);
         Console.WriteLine("Dealers sum now " + dealersSum);
+        
+        
     }
 
     public void outcome()
     {
-        if (playersSum < dealersSum)
+        if (dealersSum > playersSum && dealersSum < 21)
         {
             Console.WriteLine("You lose");
+            EndOfGame();
         }else if (playersSum == dealersSum)
         {
             Console.WriteLine("It's a tie");
+            EndOfGame();
+        }
+        else if (dealersSum < playersSum && playersSum < 21)
+        {
+            Console.WriteLine("You won");
+            EndOfGame();
+        }
+    }
+
+    public void EndOfGame()
+    {
+        Console.WriteLine("Do you want to play again? (y/n)");
+        String playAgain = Console.ReadLine().ToLower();
+        if (playAgain == "y")
+        {
+            DealCards();
         }
         else
         {
-            Console.WriteLine("You won");
+            Console.WriteLine("Game is closed");
+            return;
         }
     }
-    
 }
